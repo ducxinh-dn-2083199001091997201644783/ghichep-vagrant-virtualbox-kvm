@@ -1,0 +1,31 @@
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "ubuntu/trusty64"
+  
+  
+  # Eth0 su dung NAT cua Virtualbox
+  # Khai bao card mang thu 2 cho may ao (tuong duong eth1)
+  config.vm.network "public_network",  bridge: "em4", ip: "10.0.9.20"
+  
+  # Khai bao card mang thu 3, su dung che do hostonly cho may ao (tuong duong eth2)
+  config.vm.network "private_network", ip: "192.168.33.10"
+
+  
+  config.vm.hostname = "devstack-control"
+
+  # Khai bao RAM cho may ao
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "1024"
+  end
+
+  #### Khai bao default route cho may ao, khong dung route mac dinh 10.0.2.2 (card NAT cua Virtualbox)
+  # default router
+  config.vm.provision "shell",
+    run: "always",
+    inline: "route add default gw 10.0.9.1"
+	
+  # delete default gw on eth0
+  config.vm.provision "shell",
+    run: "always",
+    inline: "eval `route -n | awk '{ if ($8 ==\"eth0\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }'`"
+end
