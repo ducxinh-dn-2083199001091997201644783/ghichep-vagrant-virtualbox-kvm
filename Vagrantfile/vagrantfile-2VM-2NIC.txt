@@ -1,0 +1,45 @@
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "ubuntu/trusty64"
+  
+  config.vm.define "devstack_controller" do |devstack_controller|
+	devstack_controller.vm.host_name = devstack-control
+	devstack_controller.vm.network "private_network", bridge: "em4", ip: "10.0.9.20"
+	config.vm.provider "virtualbox" do |vb|
+       vb.memory = "1024"
+       vb.cpus = "2"
+    end
+	
+	
+  #### Khai bao default route cho may ao, khong dung route mac dinh 10.0.2.2 (card NAT cua Virtualbox)
+  # default router
+  config.vm.provision "shell",
+    run: "always",
+    inline: "route add default gw 10.0.9.1"
+	
+  # delete default gw on eth0
+  config.vm.provision "shell",
+    run: "always",
+    inline: "eval `route -n | awk '{ if ($8 ==\"eth0\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }'`"
+  end
+  
+  config.vm.define "devstack_compute1" do |devstack_compute1|
+    devstack_compute1.vm.host_name = compute1
+	devstack_compute1.vm.network "private_network", bridge: "em4", ip: "10.0.9.21"
+	config.vm.provider "virtualbox" do |vb|
+       vb.memory = "1024"
+       vb.cpus = "2"
+    end
+	
+  #### Khai bao default route cho may ao, khong dung route mac dinh 10.0.2.2 (card NAT cua Virtualbox)
+  # default router
+  config.vm.provision "shell",
+    run: "always",
+    inline: "route add default gw 10.0.9.1"
+	
+  # delete default gw on eth0
+  config.vm.provision "shell",
+    run: "always",
+    inline: "eval `route -n | awk '{ if ($8 ==\"eth0\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }'`"
+  end
+end
