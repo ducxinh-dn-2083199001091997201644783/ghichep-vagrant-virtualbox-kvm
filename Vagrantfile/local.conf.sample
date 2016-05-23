@@ -13,8 +13,12 @@ DEST=/opt/stack
 LOGFILE=$DEST/logs/stack.sh.log
 VERBOSE=True
 SCREEN_LOGDIR=$DEST/logs/screen
-OFFLINE=True
-RECLONE=no
+
+# Cho phep cai offline
+# OFFLINE=True
+
+# Cai khong can clone lai tu git
+# RECLONE=no
 
 # HOST
 HOST_IP=172.17.77.150
